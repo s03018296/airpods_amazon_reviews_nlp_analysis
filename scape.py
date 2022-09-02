@@ -20,6 +20,7 @@ def get_reviews(soup):
             'rating':  float(item.find('i', {'data-hook': 'review-star-rating'}).text.replace('out of 5 stars', '').strip()),
             'body': item.find('span', {'data-hook': 'review-body'}).text.strip(),
             'helpful': item.find('span', {'data-hook': 'helpful-vote-statement'}).text.replace('people found this helpful', '').strip() if item.find('span', {'data-hook': 'helpful-vote-statement'}) else 0,
+            'verified_purchase': 1 if item.find('span', {'data-hook': 'avp-badge'}) else 0,
             }
             data.append(review)
     except:
@@ -27,13 +28,16 @@ def get_reviews(soup):
 
 def get_pages_of_reviews(page_num):
     for x in range(1, page_num+1):
-        soup = get_soup(f'https://www.amazon.ca/Apple-AirPods-Charging-Latest-Model/product-reviews/B07PXGQC1Q/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews&pageNumber={x}')
-        print(f'Getting page: {x}')
-        get_reviews(soup)
-        print(len(data))
+        try:
+            soup = get_soup(f'https://www.amazon.ca/Gildan-Mens-T-Shirts-Assortment-Small/product-reviews/B077ZKF9ZN/ref=cm_cr_dp_d_show_all_btm?ie=UTF8&reviewerType=all_reviews&pageNumber={x}')
+            print(f'Getting page: {x}')
+            get_reviews(soup)
+            print(len(data))
+        except:
+            pass
 
 if __name__ == '__main__':
     user_input = int(input("Enter pages of reviews: "))
     get_pages_of_reviews(user_input)
     df = pd.DataFrame(data)
-    df.to_csv(r'airpods_reviews.csv', index=False)
+    df.to_csv(r'tshirt_reviews.csv', index=False)
